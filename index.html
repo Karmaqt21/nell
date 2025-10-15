@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Bouquet Surprise</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            color: #d14d72;
+            text-shadow: 0 0 10px rgba(209, 77, 114, 0.2);
+            letter-spacing: 2px;
+        }
+
+        .instruction {
+            font-size: 1.4rem;
+            margin-bottom: 50px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 18px 35px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+            color: #5a3d5c;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .bouquet-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            margin: 0 auto 50px;
+            cursor: pointer;
+        }
+
+        .vase {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 140px;
+            background: linear-gradient(45deg, #8B4513, #A0522D);
+            border-radius: 10px 10px 40px 40px;
+            z-index: 1;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .vase::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            right: 10px;
+            height: 20px;
+            background: linear-gradient(45deg, #CD853F, #D2691E);
+            border-radius: 50%;
+        }
+
+        .roses-wrapper {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 350px;
+        }
+
+        .flower {
+            position: absolute;
+            opacity: 0;
+            transition: all 1.5s ease;
+            z-index: 2;
+        }
+
+        .stem {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 0;
+            background: linear-gradient(to bottom, #2E8B57, #3CB371);
+            transition: height 1.5s ease;
+            border-radius: 3px;
+        }
+
+        .flower-head {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 3;
+            transition: all 1.5s ease;
+        }
+
+        .petal {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            transform-origin: center center;
+            transition: all 1.5s ease;
+            z-index: 2;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 25px;
+            height: 12px;
+            background: linear-gradient(to right, #2E8B57, #3CB371);
+            border-radius: 0 50% 50% 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+        }
+
+        .leaf-left {
+            transform: scaleX(-1);
+            left: -15px;
+        }
+
+        .leaf-right {
+            right: -15px;
+        }
+
+        .bloom .flower {
+            opacity: 1;
+        }
+
+        .bloom .stem {
+            height: var(--stem-height);
+        }
+
+        .bloom .petal {
+            opacity: 1;
+        }
+
+        .bloom .leaf {
+            opacity: 1;
+        }
+
+        .message-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .message-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 50px;
+            border-radius: 25px;
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            animation: popIn 1s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .message h2 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            color: #d14d72;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .message p {
+            font-size: 1.6rem;
+            line-height: 1.6;
+            color: #5a3d5c;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            margin-top: 35px;
+            padding: 15px 40px;
+            background: rgba(209, 77, 114, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .close-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(209, 77, 114, 0.9);
+        }
+
+        .petal-fall {
+            position: absolute;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes floatDown {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 0 10px 2px #fff;
+        }
+
+        @keyframes sparkleFloat {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(180deg); opacity: 0; }
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 1rem;
+            color: rgba(90, 61, 92, 0.7);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>A Beautiful Surprise For You</h1>
+        <div class="instruction">Click on the bouquet to reveal the surprise 💖</div>
+        
+        <div class="bouquet-container" id="bouquetContainer">
+            <div class="vase"></div>
+            <div class="roses-wrapper" id="rosesWrapper">
+                <!-- Flowers will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div class="message-container" id="messageContainer">
+        <div class="message-backdrop"></div>
+        <div class="message">
+            <h2>I Love You So Much!</h2>
+            <p>You make my world brighter every day</p>
+            <p>Thank you for being you! 🌹</p>
+            <button class="close-btn" id="closeBtn">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        Made with ❤️ for someone special
+    </footer>
+
+    <script>
+        const bouquetContainer = document.getElementById('bouquetContainer');
+        const rosesWrapper = document.getElementById('rosesWrapper');
+        const messageContainer = document.getElementById('messageContainer');
+        const closeBtn = document.getElementById('closeBtn');
+        let bloomed = false;
+
+        // Create multiple flowers in a proper bouquet arrangement
+        function createFlowers() {
+            const flowerPositions = [
+                // Center flowers (taller)
+                { left: '50%', bottom: '0px', height: 250, type: 'rose', color: '#d14d72' },
+                { left: '45%', bottom: '20px', height: 270, type: 'rose', color: '#c44569' },
+                { left: '55%', bottom: '20px', height: 270, type: 'rose', color: '#d14d72' },
+                
+                // Middle ring
+                { left: '40%', bottom: '40px', height: 230, type: 'flower', color: '#ff9ff3' },
+                { left: '60%', bottom: '40px', height: 230, type: 'flower', color: '#f368e0' },
+                { left: '35%', bottom: '60px', height: 210, type: 'flower', color: '#ff9ff3' },
+                { left: '65%', bottom: '60px', height: 210, type: 'flower', color: '#f368e0' },
+                
+                // Outer ring
+                { left: '30%', bottom: '80px', height: 190, type: 'flower', color: '#ff6b6b' },
+                { left: '70%', bottom: '80px', height: 190, type: 'flower', color: '#ee5a52' },
+                { left: '25%', bottom: '100px', height: 170, type: 'flower', color: '#ff9ff3' },
+                { left: '75%', bottom: '100px', height: 170, type: 'flower', color: '#f368e0' }
+            ];
+            
+            flowerPositions.forEach((pos, index) => {
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                flower.style.left = pos.left;
+                flower.style.bottom = pos.bottom;
+                flower.style.setProperty('--stem-height', `${pos.height}px`);
+                
+                // Create stem
+                const stem = document.createElement('div');
+                stem.className = 'stem';
+                flower.appendChild(stem);
+                
+                // Create flower head at the TOP of the stem
+                const flowerHead = document.createElement('div');
+                flowerHead.className = 'flower-head';
+                if (pos.type === 'rose') {
+                    flowerHead.style.background = `linear-gradient(45deg, ${pos.color}, #ff9ff3)`;
+                } else {
+                    flowerHead.style.background = `linear-gradient(45deg, ${pos.color}, #ffd9e9)`;
+                }
+                // Position at the top of the stem
+                flowerHead.style.bottom = `${pos.height}px`;
+                flower.appendChild(flowerHead);
+                
+                // Create petals around the flower head
+                if (pos.type === 'rose') {
+                    // Rose has more layered petals
+                    for (let j = 1; j <= 12; j++) {
+                        const petal = document.createElement('div');
+                        petal.className = `petal`;
+                        petal.style.width = '30px';
+                        petal.style.height = '40px';
+                        petal.style.background = `linear-gradient(to bottom, ${pos.color}, #ff9ff3)`;
+                        // Position petals around the flower head
+                        petal.style.bottom = `${pos.height}px`;
+                        petal.style.left = '50%';
+                        petal.style.transform = `translateX(-50%) rotate(${j * 30}deg) translateY(-20px)`;
+                        flower.appendChild(petal);
+                    }
+                } else {
+                    // Regular flower has simpler petals
+                    for (let j = 1; j <= 8; j++) {
+                        const petal = document.createElement('div');
+                        petal.className = `petal`;
+                        petal.style.width = '25px';
+                        petal.style.height = '35px';
+                        petal.style.background = `linear-gradient(to bottom, ${pos.color}, #ffd9e9)`;
+                        // Position petals around the flower head
+                        petal.style.bottom = `${pos.height}px`;
+                        petal.style.left = '50%';
+                        petal.style.transform = `translateX(-50%) rotate(${j * 45}deg) translateY(-18px)`;
+                        flower.appendChild(petal);
+                    }
+                }
+                
+                // Create leaves on the stem
+                const leaf1 = document.createElement('div');
+                leaf1.className = 'leaf leaf-left';
+                leaf1.style.bottom = `${pos.height * 0.6}px`;
+                flower.appendChild(leaf1);
+                
+                const leaf2 = document.createElement('div');
+                leaf2.className = 'leaf leaf-right';
+                leaf2.style.bottom = `${pos.height * 0.4}px`;
+                flower.appendChild(leaf2);
+                
+                rosesWrapper.appendChild(flower);
+            });
+        }
+
+        // Initialize flowers
+        createFlowers();
+
+        bouquetContainer.addEventListener('click', function() {
+            if (!bloomed) {
+                // Make the flowers bloom
+                bouquetContainer.classList.add('bloom');
+                
+                // Create falling petals
+                createFallingPetals();
+                
+                // Create sparkles
+                createSparkles();
+                
+                // Show message after delay
+                setTimeout(() => {
+                    messageContainer.style.display = 'flex';
+                }, 2000);
+                
+                bloomed = true;
+            }
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            messageContainer.style.display = 'none';
+        });
+        
+        function createFallingPetals() {
+            const colors = ['#d14d72', '#ff9ff3', '#f368e0', '#ff6b6b', '#ee5a52'];
+            
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    const petal = document.createElement('div');
+                    petal.className = 'petal-fall';
+                    
+                    // Random properties
+                    const size = Math.random() * 20 + 15;
+                    const left = Math.random() * 100;
+                    const animationDuration = Math.random() * 5 + 5;
+                    const delay = Math.random() * 2;
+                    const rotation = Math.random() * 360;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // Apply styles
+                    petal.style.width = `${size}px`;
+                    petal.style.height = `${size}px`;
+                    petal.style.left = `${left}vw`;
+                    petal.style.animation = `floatDown ${animationDuration}s ease-in ${delay}s forwards`;
+                    petal.style.transform = `rotate(${rotation}deg)`;
+                    petal.style.background = `linear-gradient(to bottom, ${color}, #ffd9e9)`;
+                    
+                    // Add to body
+                    document.body.appendChild(petal);
+                    
+                    // Remove after animation completes
+                    setTimeout(() => {
+                        petal.remove();
+                    }, (animationDuration + delay) * 1000);
+                }, i * 150);
+            }
+        }
+        
+        function createSparkles() {
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    
+                    // Random properties
+                    const left = Math.random() * 100;
+                    const animationDuration = Math.random() * 4 + 3;
+                    const delay = Math.random() * 1;
+                    const size = Math.random() * 5 + 3;
+                    
+                    // Apply styles
+                    sparkle.style.left = `${left}vw`;
+                    sparkle.style.animation = `sparkleFloat ${animationDuration}s ease-in ${delay}s forwards`;
+                    sparkle.style.width = `${size}px`;
+                    sparkle.style.height = `${size}px`;
+                    
+                    // Add to body
+                    document.body.appendChild(sparkle);
+                    
+                    // Remove after animation completes
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, (animationDuration + delay) * 1000);
+                }, i * 200);
+            }
+        }
+    </script>
+</body>
+</html>
